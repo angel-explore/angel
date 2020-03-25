@@ -50,5 +50,10 @@
             <artifactId>angel-ps-psf</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.9</version>
+        </dependency>
     </dependencies>
 </project>

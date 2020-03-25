@@ -37,15 +37,16 @@ class DeepFM(conf: SharedConf, _ctx: TaskContext = null) extends AngelModel(conf
 
   override def buildNetwork(): this.type = {
     val inputOptName: String = conf.get(MLCoreConf.ML_INPUTLAYER_OPTIMIZER, MLCoreConf.DEFAULT_ML_INPUTLAYER_OPTIMIZER)
+    //线性层
     val wide = new SimpleInputLayer("input", 1, new Identity(), optProvider.getOptimizer(inputOptName))
-
+    //embedding层
     val embeddingOptName: String = conf.get(MLCoreConf.ML_EMBEDDING_OPTIMIZER, MLCoreConf.DEFAULT_ML_EMBEDDING_OPTIMIZER)
     val embedding = new Embedding("embedding", numFields * numFactors, numFactors, optProvider.getOptimizer(embeddingOptName))
-
+    //交叉层
     val innerSumCross = new BiInnerSumCross("innerSumPooling", embedding)
 
     // outputDim:transFunc:optimizer
-    var fcLayer: Layer = innerSumCross
+    var fcLayer: Layer = innerSumCross//全连接层
     val fclayerParams = conf.get(MLCoreConf.ML_FCLAYER_PARAMS, MLCoreConf.DEFAULT_ML_FCLAYER_PARAMS)
     fclayerParams.split("|").zipWithIndex.foreach{ case (params: String, idx: Int) =>
       val name = s"fclayer_$idx"
@@ -61,9 +62,9 @@ class DeepFM(conf: SharedConf, _ctx: TaskContext = null) extends AngelModel(conf
             TransFunc.defaultTransFunc(), optProvider.getDefaultOptimizer())
       }
     }
-
+    //全连接层
     val join = new SumPooling("sumPooling", 1, Array[Layer](wide, innerSumCross, fcLayer))
-
+    //损失层
     new LossLayer("simpleLossLayer", join, new LogLoss())
 
     this
