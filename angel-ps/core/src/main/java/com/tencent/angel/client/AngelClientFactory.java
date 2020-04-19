@@ -52,7 +52,8 @@ public class AngelClientFactory {
   }
 
   public AngelClient doGet(Configuration conf) {
-    String mode = conf.get(AngelConf.ANGEL_DEPLOY_MODE, AngelConf.DEFAULT_ANGEL_DEPLOY_MODE);
+    String mode = conf.get(AngelConf.ANGEL_DEPLOY_MODE,
+            AngelConf.DEFAULT_ANGEL_DEPLOY_MODE);
 
     if (mode.equals(AngelDeployMode.LOCAL.toString())) {
       return new AngelLocalClient(conf);
