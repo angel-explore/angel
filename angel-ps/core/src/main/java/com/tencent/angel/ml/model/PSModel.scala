@@ -18,34 +18,41 @@
 
 package com.tencent.angel.ml.model
 
-import java.util.{ArrayList, List}
 import java.util.concurrent.Future
+import java.util.{ArrayList, List}
 
-import scala.collection.mutable.Map
-import org.apache.commons.logging.{Log, LogFactory}
 import com.tencent.angel.conf.MatrixConf
 import com.tencent.angel.exception.{AngelException, InvalidParameterException}
 import com.tencent.angel.ml.math2.utils.RowType
-import com.tencent.angel.ml.matrix.{MatrixContext, MatrixOpLogType}
 import com.tencent.angel.ml.math2.vector.Vector
 import com.tencent.angel.ml.matrix.psf.get.base.{GetFunc, GetResult}
 import com.tencent.angel.ml.matrix.psf.update.base.{UpdateFunc, VoidResult}
 import com.tencent.angel.ml.matrix.psf.update.zero.Zero
 import com.tencent.angel.ml.matrix.psf.update.zero.Zero.ZeroParam
+import com.tencent.angel.ml.matrix.{MatrixContext, MatrixOpLogType}
 import com.tencent.angel.psagent.matrix.transport.adapter.{GetRowsResult, RowIndex}
 import com.tencent.angel.worker.task.TaskContext
+import org.apache.commons.logging.{Log, LogFactory}
+
+import scala.collection.mutable.Map
+
 
 /**
-  * Angel's Core Abstraction. PSModel is used on workers to manipulate distribute model(matrix) partitions on PSServer.
+  * Angel 核心类
+  * 提供了常用的远程矩阵（Matrix）和向量（Vector）的获取和更新接口，
+  * 使得算法工程师可以如同操作本地对象一样的操作参数服务器上的**分布式矩阵和向量**
   *
-  * @param modelName     matrix name
-  * @param row           matrix row number
-  * @param col           matrix column number
-  * @param blockRow      matrix partition row number
-  * @param blockCol      matrix partition column number
-  * @param validIndexNum number of valid indexes
-  * @param needSave      need save to filesystem or not
-  * @param ctx           Task context
+  * @param modelName     模型名称
+  * @param row           矩阵行数
+  * @param col           矩阵列数
+  * @param blockRow      每一个矩阵分片的行数
+  * @param blockCol      每一个矩阵分片的列数
+  * @param validIndexNum 有效索引数
+  * @param needSave      是否需要保存文件系统
+  * @param ctx           TaskContext PSModel的Task上下文 ,PSModel对象需要与Angel的一个Task绑定，
+  *                      因为PSModel运行于Worker之上，另外也是为了支持BSP和SSP同步模型
+  *                      这里使用了隐式转换，只要创建PSModel的容器中，有ctx这个对象，
+  *                      它就会自动的将ctx注入PSModel之中，无需显式调用）
   */
 class PSModel(
                val modelName: String,
@@ -107,9 +114,11 @@ class PSModel(
   }
 
   /**
-    * Set the average attribute.
+    * 设置平均属性
+    * 设置矩阵更新属性，在更新矩阵时是否先将更新参数除以总的task数量。
+    * 本属性increment函数中使用，但不影响update函数
     *
-    * @param aver true means the matrix update should be divided by total task number before sent to ps
+    * @param aver true表示在更新矩阵时先将更新参数除以总task数量，false表示不除
     */
   def setAverage(aver: Boolean): this.type = {
     matrixCtx.set(MatrixConf.MATRIX_AVERAGE, String.valueOf(aver))
@@ -117,9 +126,10 @@ class PSModel(
   }
 
   /**
-    * Set the hogwild attribute
+    * 设置矩阵属性，是否采用hogwild 方式存储和更新本地矩阵。
+    * 当worker task数量大于1时，可以使用hogwild 方式节省内存。默认为使用**hogwild** 方式
     *
-    * @param hogwild true means use the hogwild mode
+    * @param hogwild true表示使用hogwild 方式，false表示不使用
     */
   def setHogwild(hogwild: Boolean): this.type = {
     matrixCtx.set(MatrixConf.MATRIX_HOGWILD, String.valueOf(hogwild))
@@ -159,7 +169,8 @@ class PSModel(
   def getRowType(): RowType = matrixCtx.getRowType
 
   /**
-    * Set model load path
+    * 设置模型（矩阵）加载路径，本属性用于模型增量更新和预测功能模式下，
+    * 表示在参数服务器端初始化矩阵时，从文件中读取矩阵参数来初始化
     *
     * @param path load path
     */
@@ -170,7 +181,8 @@ class PSModel(
   }
 
   /**
-    * Set model save path
+    * 设置模型(矩阵)保存路径；在训练功能模式下，当训练完成时，
+    * 需要将参数服务器上的矩阵参数保存在文件中
     *
     * @param path
     */
@@ -185,18 +197,18 @@ class PSModel(
   // =======================================================================
 
   /**
-    * Default Simple Sync Clock Method
+    * 默认clock的简化版，封装了clock().get()。除非需要的等待，否则建议调用改方法
     */
   def syncClock(flush: Boolean = true) = {
     this.clock(flush).get()
   }
 
   /**
-    * Flush the cached matrix oplogs to ps if needed and update the clock for the matrix
+    * 将本地缓存的所有矩阵更新（调用increment函数会将更新缓存在本地）合并后发送给参数服务器，然后更新矩阵的时钟
     *
-    * @param flush flush the cached oplog first or not
+    * @param flush 是否刷新缓存 oplog
     * @throws com.tencent.angel.exception.AngelException
-    * @return a future result
+    * @return Future[VoidResult] clock操作结果，应用程序可以选择是否等待clock操作完成
     */
   @throws(classOf[AngelException])
   def clock(flush: Boolean = true): Future[VoidResult] = {
@@ -212,10 +224,10 @@ class PSModel(
 
 
   /**
-    * Flush the cached matrix oplogs to ps
+    * 将本地缓存的所有矩阵更新（调用increment函数会将更新缓存在本地）合并后发送给参数服务器
     *
     * @throws com.tencent.angel.exception.AngelException
-    * @return a future result
+    * @return Future[VoidResult] flush操作结果，应用程序可以选择是否等待flush操作完成
     */
   @throws(classOf[AngelException])
   def flush(): Future[VoidResult] = {
@@ -235,10 +247,10 @@ class PSModel(
 
 
   /**
-    * Increment the matrix row vector use a same dimension vector. The update will be cache in local
-    * and send to ps until flush or clock is called
+    * 以累加的方式更新矩阵的某一行，该方法采用异步更新的方式，只是将更新向量缓存到本地，
+    * 而非直接作用于参数服务器，只有当执行flush或者clock方法时才会将更新作用到参数服务器
     *
-    * @param delta update row vector
+    * @param delta delta Vector更新行向量，Vector 与行向量维度一致的更新向量
     * @throws com.tencent.angel.exception.AngelException
     */
   @throws(classOf[AngelException])
@@ -274,10 +286,10 @@ class PSModel(
   }
 
   /**
-    * Increment the matrix row vectors use same dimension vectors. The update will be cache in local
-    * and send to ps until flush or clock is called
+    * 以累加的方式更新矩阵的某些行，该方法采用异步更新的方式，只是将更新向量缓存到本地，
+    * 而非直接作用于参数服务器，只有当执行flush或者clock方法时才会将更新作用到参数服务器
     *
-    * @param deltas update row vectors
+    * @param deltas List[Vector] 与行向量维度一致的更新向量列表
     * @throws com.tencent.angel.exception.AngelException
     */
   @throws(classOf[AngelException])
@@ -287,11 +299,11 @@ class PSModel(
   }
 
   /**
-    * Get any result you want about the matrix use a psf get function
+    * 使用psf get函数获取矩阵的元素或元素统计信息。与getRow/getRows/getRowsFlow方法不同，本方法只支持异步模型
     *
-    * @param func psf get function
+    * @param func GetFunc get类型的psf函数。psf函数是Angel提供的一种参数服务器功能扩展接口
     * @throws com.tencent.angel.exception.AngelException
-    * @return psf get function result
+    * @return psf get函数返回结果
     */
   @throws(classOf[AngelException])
   def get(func: GetFunc): GetResult = {
@@ -307,11 +319,17 @@ class PSModel(
 
 
   /**
-    * Get a matrix row use row index
+    * 获取矩阵的某一行。在不同的同步模型下，本方法会有不同的流程。
+    * Angel支持3种同步模型：BSP,SSP和异步模型。
     *
-    * @param rowIndex row index
+    * 在BSP 和 SSP 模型下，本方法会首先检查本地缓存中是否已经存在需要获取的行且该行的时钟
+    * 信息是否满足同步模型，若缓存中不存在或者不满足同步模型要求，它会向参数服务器请求，如
+    * 果参数服务器上的行时钟也不满足同步模型，则它会一直等待直到满足为止；
+    * 在异步模型下，该方法会直接向参数服务器请求所需的行，而不关心时钟信息
+    *
+    * @param rowIndex 行号
     * @throws com.tencent.angel.exception.AngelException
-    * @return
+    * @return 指定行的向量
     */
   @SuppressWarnings(Array("unchecked"))
   @throws(classOf[AngelException])
@@ -328,9 +346,9 @@ class PSModel(
 
 
   /**
-    * Get a batch of matrix rows
+    * 获取矩阵的某些行。在BSP/SSP/异步模型下的获取流程与getRow方法类似
     *
-    * @param rowIndex row indexes
+    * @param rowIndex 行号集合
     * @param batchNum the number of rows get in a rpc
     * @throws com.tencent.angel.exception.AngelException
     * @return row index to row map
@@ -357,11 +375,11 @@ class PSModel(
   }
 
   /**
-    * Get a batch of matrix rows
+    * 获取矩阵的某些行。在BSP/SSP/异步模型下的获取流程与getRow方法类似
     *
-    * @param rowIndexes row indexes
+    * @param rowIndexes 行号数组
     * @throws com.tencent.angel.exception.AngelException
-    * @return row list
+    * @return 指定行的行向量列表；列表有序，与参数数组顺序一致
     */
   @throws(classOf[AngelException])
   def getRows(rowIndexes: Array[Int]): List[Vector] = {
@@ -381,12 +399,14 @@ class PSModel(
   }
 
   /**
-    * Get a batch of rows use pipeline mode
+    * 以流水化的形式获取矩阵的某些行，该方法会立即返回，用于支持一边计算一边进行行获取，
+    * 在BSP/SSP/异步模型下的获取流程与getRow方法类似
     *
-    * @param rowIndex row indexes
-    * @param batchNum the number of rows get in a rpc
+    * @param rowIndex 行号集合
+    * @param batchNum 一次rpc请求获取行数，每次RPC请求的行数，这个参数定义了流水化的粒度，可以设置为-1，表示由系统自行选择
     * @throws com.tencent.angel.exception.AngelException
-    * @return Get result which contains a blocked queue
+    * @return 一个行向量队列，上层应用程序可以从该队列中得到已经获取到的行对应的行向量，
+    *         行结果，里面包含一个LinkedBlockingQueue<Vector>
     */
   @throws(classOf[AngelException])
   def getRowsFlow(rowIndex: RowIndex, batchNum: Int): GetRowsResult = {
@@ -401,33 +421,35 @@ class PSModel(
   }
 
   /**
-    * Get value of specified index array
+    * 获取模型指定行的指定index对应的部分，用于32 bit的模型s
     *
-    * @param rowId row Id
-    * @param index specified index ids
-    * @return sparse vector, key of this vector is the specified index array
+    * @param rowId 行号
+    * @param index 列下标数组
+    * @return 一个稀疏类型的向量,Vector的key指定了一个索引数组
     */
   def getRowWithIndex(rowId: Int, index: Array[Int]): Vector = {
     getClient.get(rowId, index)
   }
 
   /**
-    * Get value of specified index array
+    * 获取模型指定行的指定index对应的部分， 用于64 bit的模型
     *
-    * @param rowId row Id
-    * @param index specified index ids
-    * @return sparse vector, key of this vector is the specified index array
+    * @param rowId 行号
+    * @param index 列下标数组
+    * @return 一个稀疏类型的向量
     */
   def getRowWithLongIndex(rowId: Int, index: Array[Long]): Vector = {
     getClient.get(rowId, index)
   }
 
   /**
-    * Update the matrix use a update psf
+    * 使用psf update函数更新矩阵的参数。与increment方法不同，本方法会直接将更新作用与参数服务器端
     *
-    * @param func update psf
+    * @param func func: GetFunc psf update函数。
+    *             用户可以根据需求自定义psf update函数，当然，Angel提供了一个包含常用函数的函数库。
+    *             与increment函数不同，本方法会立即将更新作用于参数服务器
     * @throws com.tencent.angel.exception.AngelException
-    * @return a future result
+    * @return Future[VoidResult] psf update函数返回结果，应用程序可以选择是否等待更新结果
     */
   @throws(classOf[AngelException])
   def update(func: UpdateFunc): Future[VoidResult] = {
