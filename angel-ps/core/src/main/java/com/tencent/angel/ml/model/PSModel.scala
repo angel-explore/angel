@@ -103,10 +103,11 @@ class PSModel(
   }
 
   /**
-    * Set matrix attribute
+    * 设置矩阵属性
+    * Angel可以支持自定义矩阵参数扩展
     *
-    * @param key   attribute name
-    * @param value attribute value
+    * @param key   属性名
+    * @param value 属性值
     */
   def setAttribute(key: String, value: String): this.type = {
     matrixCtx.set(key, value)
@@ -137,9 +138,17 @@ class PSModel(
   }
 
   /**
-    * Set the matrix update storage type
+    * 设置矩阵更新存储类型
+    * 矩阵更新存储方式，当使用increment方法更新矩阵时，Angel会先将更新行向量缓存在本地。
+    * 缓存的方式是在本地定义一个和待更新矩阵维度一致的矩阵
     *
     * @param oplogType storage type
+    *                  - oplogType: String
+    *                  目前支持的存储方式有：
+    *                  DENSE_DOUBE： 表示使用一个稠密double型矩阵来存储矩阵的更新，一般当待更新矩阵元素类型为double时选择更新存储方式
+    *                  DENSE_INT：   表示使用一个稠密的int型矩阵来存储矩阵更新，一般当待更新矩阵元素为int类型时选择这种存储方式
+    *                  LIL_INT：     表示使用一个稀疏int型矩阵来存储矩阵更新，当待更新矩阵元素类型为int且更新相对稀疏时选择更新存储方式
+    *                  DENSE_FLOAT： 表示使用一个稠密的float型矩阵来存储矩阵更新，一般当待更新矩阵元素为float类型时选择这种存储方式
     */
   def setOplogType(oplogType: String): this.type = {
     matrixCtx.set(MatrixConf.MATRIX_OPLOG_TYPE, oplogType)
@@ -157,9 +166,20 @@ class PSModel(
   }
 
   /**
-    * Set the matrix row type
+    * 设置矩阵行类型
+    * 设置矩阵行向量的元素类型和存储方式，可以根据模型特点和稀疏程度来设置该参数。
+    * 目前Angel支持的矩阵元素类型有int, float和double；存储方式有稀疏和稠密
     *
-    * @param rowType row type
+    * @param rowType MLProtos.RowType
+    *                目前支持矩阵行向量的元素类型和存储方式有：
+    *                T_DOUBLE_SPARSE： 表示稀疏double型
+    *                T_DOUBLE_DENSE ： 表示稠密double型,
+    *                T_INT_SPARSE：    表示稀疏int型；
+    *                T_INT_DENSE：     表示稠密int型；
+    *                T_FLOAT_SPARSE：  表示稀疏float型；
+    *                T_FLOAT_DENSE：   表示稠密float型；
+    *                T_INT_ARBITRARY ：表示数据类型为int
+    *                用户可以根据实际算法情况，选择最节省内存的存储方式
     */
   def setRowType(rowType: RowType): this.type = {
     matrixCtx.setRowType(rowType)
