@@ -36,6 +36,9 @@ abstract class MLLearner(val ctx: TaskContext) extends Learner {
   val globalMetrics = new GlobalMetrics(ctx)
   val conf: Configuration = ctx.getConf
 
+  /**
+    * 屏障todo
+    */
   override protected def barrier(): Unit = {
     PSAgentContext.get().barrier(ctx.getTaskId.getIndex)
   }

@@ -52,7 +52,7 @@ class GraphRunner extends MLRunner with SConfHelper {
       val model: AngelModel = AngelModel(modelClassName, sharedConf)
       model.buildNetwork()
 
-      model.createMatrices(envCtx)
+      model.createMatrices(envCtx)//创建矩阵
       if (!loadModelPath.isEmpty) {
         model.loadModel(envCtx, loadModelPath, conf)
       } else {

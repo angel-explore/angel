@@ -27,12 +27,14 @@ import org.apache.hadoop.conf.Configuration
 trait MLRunner extends AppSubmitter {
 
   /**
-    * Training job to obtain a model
+    * 训练任务获取模型
+    * @param conf Angel任务相关配置和算法配置信息
     */
   def train(conf: Configuration)
 
   /**
-    * Using a model to predict with unobserved samples
+    * 传入样本使用模型进行预测
+    * @param conf  Angel任务相关配置
     */
   def predict(conf: Configuration)
 

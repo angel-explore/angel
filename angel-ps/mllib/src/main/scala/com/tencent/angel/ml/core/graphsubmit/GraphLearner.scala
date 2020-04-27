@@ -32,6 +32,12 @@ import com.tencent.angel.ml.metric.LossMetric
 import com.tencent.angel.worker.task.TaskContext
 import org.apache.commons.logging.{Log, LogFactory}
 
+/**
+  * 基础学习器
+  *
+  * @param conf
+  * @param ctx
+  */
 class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
   val LOG: Log = LogFactory.getLog(classOf[GraphLearner])
   private implicit val sharedConf: SharedConf = conf
@@ -51,6 +57,14 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
   val decayOnBatch: Boolean = conf.getBoolean(MLCoreConf.ML_OPT_DECAY_ON_BATCH,
     MLCoreConf.DEFAULT_ML_OPT_DECAY_ON_BATCH)
 
+  /**
+    * 一次迭代训练
+    *
+    * @param epoch
+    * @param iter
+    * @param numBatch
+    * @return
+    */
   def trainOneEpoch(epoch: Int, iter: Iterator[Array[LabeledData]], numBatch: Int): Double = {
     var batchCount: Int = 0
     var loss: Double = 0.0
@@ -110,8 +124,8 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
   }
 
   override def train(posTrainData: DataBlock[LabeledData],
-            negTrainData: DataBlock[LabeledData],
-            validationData: DataBlock[LabeledData]): MLModel = {
+                     negTrainData: DataBlock[LabeledData],
+                     validationData: DataBlock[LabeledData]): MLModel = {
     LOG.info(s"Task[${ctx.getTaskIndex}]: Starting to train ...")
     LOG.info(s"Task[${ctx.getTaskIndex}]: epoch=$epochNum, initLearnRate=$lr0")
 
@@ -149,7 +163,7 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
         model.pushGradient(graph.getLR)
       case _ =>
     }
-
+    //迭代训练
     while (ctx.getEpoch < epochNum) {
       val epoch = ctx.getEpoch
       LOG.info(s"Task[${ctx.getTaskIndex}]: epoch=$epoch start.")
@@ -190,7 +204,7 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
   }
 
   private def getBatchDataIterator(trainData: DataBlock[LabeledData],
-                                  batchData: Array[LabeledData], numBatch: Int) = {
+                                   batchData: Array[LabeledData], numBatch: Int) = {
     trainData.resetReadIndex()
     assert(batchData.length > 1)
 
@@ -208,8 +222,8 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
   }
 
   private def getBatchDataIterator(posData: DataBlock[LabeledData],
-                                  negData: DataBlock[LabeledData],
-                                  batchData: Array[LabeledData], numBatch: Int) = {
+                                   negData: DataBlock[LabeledData],
+                                   batchData: Array[LabeledData], numBatch: Int) = {
     posData.resetReadIndex()
     negData.resetReadIndex()
     assert(batchData.length > 1)
