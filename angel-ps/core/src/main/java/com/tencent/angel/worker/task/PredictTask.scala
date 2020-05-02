@@ -21,14 +21,19 @@ package com.tencent.angel.worker.task
 import java.io.IOException
 
 import com.tencent.angel.exception.AngelException
-import com.tencent.angel.ml.math2.utils.LabeledData
+import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
 import com.tencent.angel.ml.model.OldMLModel
 import com.tencent.angel.utils.HdfsUtil
-import com.tencent.angel.ml.math2.utils.DataBlock
 
 abstract class PredictTask[KEYIN, VALUEIN](ctx: TaskContext)
   extends BaseTask[KEYIN, VALUEIN, LabeledData](ctx) {
 
+  /**
+    * 利用模型进行预测
+    *
+    * @param taskContext the task context
+    * @throws com.tencent.angel.exception.AngelException
+    */
   @throws(classOf[AngelException])
   final def run(taskContext: TaskContext) {
     this.predict(taskContext)

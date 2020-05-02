@@ -42,8 +42,9 @@ public class Task extends Thread {
   private volatile TaskState state;
   final List<String> diagnostics;
 
+  //依赖
   @SuppressWarnings("rawtypes") private volatile BaseTask userTask;
-
+  //任务上下文
   final TaskContext taskContext;
 
   public Task(TaskId taskId, TaskContext taskContext) {

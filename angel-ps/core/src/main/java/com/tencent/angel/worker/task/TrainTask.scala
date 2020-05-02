@@ -25,9 +25,19 @@ import com.tencent.angel.ml.math2.utils.LabeledData
   */
 abstract class TrainTask[KEYIN, VALUEIN](taskContext: TaskContext) extends BaseTask[KEYIN, VALUEIN, LabeledData](taskContext) {
 
+  /**
+    * 模型训练过程
+    *
+    * @param taskContext the task context
+    */
   final def run(taskContext: TaskContext) = {
     this.train(taskContext)
   }
 
+  /**
+    * 模型训练过程
+    *
+    * @param taskContext
+    */
   def train(taskContext: TaskContext);
 }
