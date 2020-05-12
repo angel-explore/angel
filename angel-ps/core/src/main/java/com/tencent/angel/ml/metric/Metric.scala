@@ -21,15 +21,12 @@ package com.tencent.angel.ml.metric
 import com.tencent.angel.conf.AngelConf
 
 /**
-  * Algorithm metric calculate interface
+  * 算法度量计算接口
   */
-
-
 abstract class Metric {
 
-
   /**
-    * Set metric calculate dependency counters
+    * 设置度量计算依赖项计数器
     */
   def setValue(value: Double)
 
@@ -42,7 +39,8 @@ abstract class Metric {
   def merge(other: this.type): this.type
 
   /**
-    * Use counters calculate metric
+    * 使用计数器计算度量
+    * 每次迭代完成后，master 调用 calculate 方法，计算全局指标
     *
     * @return metric value
     */

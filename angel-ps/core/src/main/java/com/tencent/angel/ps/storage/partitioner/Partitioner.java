@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * Matrix partitioner interface.
+ * 矩阵分区接口
  */
 public interface Partitioner {
   /**
