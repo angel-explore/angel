@@ -25,8 +25,14 @@ import scala.collection.mutable
 
 class GlobalMetrics(ctx: TaskContext) {
 
+  //所有metrics Map表
   val metricsTable = mutable.Map[String, Metric]()
 
+  /**
+    *
+    * @param metricName
+    * @param metricValue
+    */
   def metric(metricName: String, metricValue: Double) = {
     val metric: Option[Metric] = metricsTable.get(metricName)
     if (metric.isDefined) {
@@ -36,6 +42,12 @@ class GlobalMetrics(ctx: TaskContext) {
     }
   }
 
+  /**
+    * 添加一个Metric
+    *
+    * @param metricName
+    * @param metric
+    */
   def addMetric(metricName: String, metric: Metric) = {
     metricsTable += (metricName -> metric)
     ctx.addAlgoMetric(metricName, metric)

@@ -22,12 +22,21 @@ package com.tencent.angel.ml.metric
 class LossMetric(var sampleNum: Int) extends Metric {
   var loss: Double = 0.0
 
+  /**
+    * 汇总各个Task的sampleNum、globalLoss值，汇总方式为累加。
+    * @param other
+    * @return
+    */
   override def merge(other: this.type): this.type = {
     this.sampleNum += other.sampleNum
     this.loss += other.loss
     this
   }
 
+  /**
+    * 计算全局指标，计算方法为全局globalLoss值除样本数：
+    * @return metric value
+    */
   override def calculate(): Double = {
     this.loss / this.sampleNum
   }

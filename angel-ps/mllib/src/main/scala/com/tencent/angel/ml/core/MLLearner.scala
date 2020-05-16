@@ -19,19 +19,17 @@
 package com.tencent.angel.ml.core
 
 
-/**
-  * Base class for all machine learning algorithm learner.
-  */
-
-
-import com.tencent.angel.ml.metric.GlobalMetrics
 import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
+import com.tencent.angel.ml.metric.GlobalMetrics
 import com.tencent.angel.ml.model.OldMLModel
 import com.tencent.angel.mlcore.{Learner, MLModel}
 import com.tencent.angel.psagent.PSAgentContext
 import com.tencent.angel.worker.task.TaskContext
 import org.apache.hadoop.conf.Configuration
 
+/**
+  * Base class for all machine learning algorithm learner.
+  */
 abstract class MLLearner(val ctx: TaskContext) extends Learner {
   val globalMetrics = new GlobalMetrics(ctx)
   val conf: Configuration = ctx.getConf
