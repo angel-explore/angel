@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -25,37 +25,37 @@ import org.apache.hadoop.yarn.event.AbstractEvent;
  * PS manager event.
  */
 public class ParameterServerManagerEvent extends AbstractEvent<ParameterServerManagerEventType> {
-  /**
-   * ps id
-   */
-  private final ParameterServerId psId;
+    /**
+     * ps id
+     */
+    private final ParameterServerId psId;
 
-  /**
-   * Create a ParameterServerManagerEvent
-   *
-   * @param type event type
-   */
-  public ParameterServerManagerEvent(ParameterServerManagerEventType type) {
-    this(type, null);
-  }
+    /**
+     * Create a ParameterServerManagerEvent
+     *
+     * @param type event type
+     */
+    public ParameterServerManagerEvent(ParameterServerManagerEventType type) {
+        this(type, null);
+    }
 
-  /**
-   * Create a ParameterServerManagerEvent
-   *
-   * @param type event type
-   * @param psId ps id
-   */
-  public ParameterServerManagerEvent(ParameterServerManagerEventType type, ParameterServerId psId) {
-    super(type);
-    this.psId = psId;
-  }
+    /**
+     * Create a ParameterServerManagerEvent
+     *
+     * @param type event type
+     * @param psId ps id
+     */
+    public ParameterServerManagerEvent(ParameterServerManagerEventType type, ParameterServerId psId) {
+        super(type);
+        this.psId = psId;
+    }
 
-  /**
-   * get ps id
-   *
-   * @return ParameterServerId ps id
-   */
-  public ParameterServerId getPsId() {
-    return psId;
-  }
+    /**
+     * get ps id
+     *
+     * @return ParameterServerId ps id
+     */
+    public ParameterServerId getPsId() {
+        return psId;
+    }
 }

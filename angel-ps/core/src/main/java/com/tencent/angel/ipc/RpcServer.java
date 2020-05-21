@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -25,38 +25,37 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public interface RpcServer {
-  /**
-   * The port this server runs on.
-   */
-  int getPort();
+    /**
+     * The port this server runs on.
+     */
+    int getPort();
 
-  void start();
+    void start();
 
-  void stop();
+    void stop();
 
-  void join() throws InterruptedException;
+    void join() throws InterruptedException;
 
-  /**
-   * Called for each call.
-   *
-   * @param param       writable parameter
-   * @param receiveTime time
-   * @return Message
-   * @throws java.io.IOException e
-   */
-  Message call(Class<? extends VersionedProtocol> protocol, RPCProtos.RpcRequestBody param,
-    long receiveTime) throws IOException;
+    /**
+     * Called for each call.
+     *
+     * @param param       writable parameter
+     * @param receiveTime time
+     * @return Message
+     * @throws java.io.IOException e
+     */
+    Message call(Class<? extends VersionedProtocol> protocol, RPCProtos.RpcRequestBody param, long receiveTime) throws IOException;
 
-  InetSocketAddress getListenerAddress();
+    InetSocketAddress getListenerAddress();
 
-  public void openServer();
+    public void openServer();
 
-  /**
-   * Total number of clients connect to this server.
-   */
-  public int getNumberOfConnections();
+    /**
+     * Total number of clients connect to this server.
+     */
+    public int getNumberOfConnections();
 
 
-  void addProtocolImpl(Class<?> protocol, Object impl);
+    void addProtocolImpl(Class<?> protocol, Object impl);
 
 }

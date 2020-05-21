@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -22,23 +22,23 @@ package com.tencent.angel.master.ps;
  * PS manager event type.
  */
 public enum ParameterServerManagerEventType {
-  /**
-   * notify all parameter servers to write matrices to files
-   */
-  COMMIT,
+    /**
+     * notify all parameter servers to write matrices to files
+     */
+    COMMIT,
 
-  /**
-   * a ps run successfully
-   */
-  PARAMETERSERVER_DONE,
+    /**
+     * a ps run successfully
+     */
+    PARAMETERSERVER_DONE,
 
-  /**
-   * a ps is killed
-   */
-  PARAMETERSERVER_KILLED,
+    /**
+     * a ps is killed
+     */
+    PARAMETERSERVER_KILLED,
 
-  /**
-   * a ps is failed
-   */
-  PARAMETERSERVER_FAILED
+    /**
+     * a ps is failed
+     */
+    PARAMETERSERVER_FAILED
 }

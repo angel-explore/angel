@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -22,140 +22,140 @@ import com.tencent.angel.ps.ParameterServerId;
 import com.tencent.angel.psagent.PSAgentId;
 import com.tencent.angel.worker.WorkerId;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Location manager
  */
 public class LocationManager {
-  /**
-   * Master location
-   */
-  private volatile Location masterLocation;
+    /**
+     * Master location
+     */
+    private volatile Location masterLocation;
 
-  /**
-   * PS locations
-   */
-  private final Map<ParameterServerId, Location> psIdToLocMap;
+    /**
+     * PS locations
+     */
+    private final Map<ParameterServerId, Location> psIdToLocMap;
 
-  /**
-   * Worker locations
-   */
-  private final Map<WorkerId, Location> workerIdToLocMap;
+    /**
+     * Worker locations
+     */
+    private final Map<WorkerId, Location> workerIdToLocMap;
 
-  /**
-   * All ps ids
-   */
-  private volatile ParameterServerId[] psIds;
+    /**
+     * All ps ids
+     */
+    private volatile ParameterServerId[] psIds;
 
-  /**
-   * Create a location manager
-   */
-  public LocationManager() {
-    this.masterLocation = null;
-    this.psIdToLocMap = new ConcurrentHashMap<>();
-    this.workerIdToLocMap = new ConcurrentHashMap<>();
-  }
-
-  /**
-   * Get master location
-   *
-   * @return master location
-   */
-  public Location getMasterLocation() {
-    return masterLocation;
-  }
-
-  /**
-   * Get a ps location
-   *
-   * @param psId ps id
-   * @return ps location
-   */
-  public Location getPsLocation(ParameterServerId psId) {
-    return psIdToLocMap.get(psId);
-  }
-
-  /**
-   * Get a worker location
-   *
-   * @param workerId worker id
-   * @return worker location
-   */
-  public Location getWorkerLocation(WorkerId workerId) {
-    return workerIdToLocMap.get(workerId);
-  }
-
-  /**
-   * Set master location
-   *
-   * @param masterLocation master location
-   */
-  public void setMasterLocation(Location masterLocation) {
-    this.masterLocation = masterLocation;
-  }
-
-  /**
-   * Set a ps location
-   *
-   * @param psId ps id
-   * @param loc  ps location
-   */
-  public void setPsLocation(ParameterServerId psId, Location loc) {
-    if (loc == null) {
-      psIdToLocMap.remove(psId);
-    } else {
-      psIdToLocMap.put(psId, loc);
+    /**
+     * Create a location manager
+     */
+    public LocationManager() {
+        this.masterLocation = null;
+        this.psIdToLocMap = new ConcurrentHashMap<>();
+        this.workerIdToLocMap = new ConcurrentHashMap<>();
     }
-  }
 
-  /**
-   * Set worker location
-   *
-   * @param workerId worker id
-   * @param loc      worker location
-   */
-  public void setWorkerLocation(WorkerId workerId, Location loc) {
-    workerIdToLocMap.put(workerId, loc);
-  }
+    /**
+     * Get master location
+     *
+     * @return master location
+     */
+    public Location getMasterLocation() {
+        return masterLocation;
+    }
 
-  /**
-   * Set all ps ids
-   *
-   * @param psIds all ps ids
-   */
-  public void setPsIds(ParameterServerId[] psIds) {
-    this.psIds = psIds;
-  }
+    /**
+     * Get a ps location
+     *
+     * @param psId ps id
+     * @return ps location
+     */
+    public Location getPsLocation(ParameterServerId psId) {
+        return psIdToLocMap.get(psId);
+    }
 
-  /**
-   * Get all ps ids
-   *
-   * @return all ps ids
-   */
-  public ParameterServerId[] getPsIds() {
-    return psIds;
-  }
+    /**
+     * Get a worker location
+     *
+     * @param workerId worker id
+     * @return worker location
+     */
+    public Location getWorkerLocation(WorkerId workerId) {
+        return workerIdToLocMap.get(workerId);
+    }
 
-  public void setPSAgentLocation(PSAgentId psAgentId, Location location) {
-  }
+    /**
+     * Set master location
+     *
+     * @param masterLocation master location
+     */
+    public void setMasterLocation(Location masterLocation) {
+        this.masterLocation = masterLocation;
+    }
 
-  /**
-   * Are all pss registered
-   *
-   * @return true mean all pss have registered to master
-   */
-  public boolean isAllPsRegisted() {
-    return (psIds != null) && (psIds.length == psIdToLocMap.size());
-  }
+    /**
+     * Set a ps location
+     *
+     * @param psId ps id
+     * @param loc  ps location
+     */
+    public void setPsLocation(ParameterServerId psId, Location loc) {
+        if (loc == null) {
+            psIdToLocMap.remove(psId);
+        } else {
+            psIdToLocMap.put(psId, loc);
+        }
+    }
 
-  /**
-   * Get all ps locations
-   *
-   * @return all ps locations
-   */
-  public Map<ParameterServerId, Location> getPsLocations() {
-    return psIdToLocMap;
-  }
+    /**
+     * Set worker location
+     *
+     * @param workerId worker id
+     * @param loc      worker location
+     */
+    public void setWorkerLocation(WorkerId workerId, Location loc) {
+        workerIdToLocMap.put(workerId, loc);
+    }
+
+    /**
+     * Set all ps ids
+     *
+     * @param psIds all ps ids
+     */
+    public void setPsIds(ParameterServerId[] psIds) {
+        this.psIds = psIds;
+    }
+
+    /**
+     * Get all ps ids
+     *
+     * @return all ps ids
+     */
+    public ParameterServerId[] getPsIds() {
+        return psIds;
+    }
+
+    public void setPSAgentLocation(PSAgentId psAgentId, Location location) {
+    }
+
+    /**
+     * Are all pss registered
+     *
+     * @return true mean all pss have registered to master
+     */
+    public boolean isAllPsRegisted() {
+        return (psIds != null) && (psIds.length == psIdToLocMap.size());
+    }
+
+    /**
+     * Get all ps locations
+     *
+     * @return all ps locations
+     */
+    public Map<ParameterServerId, Location> getPsLocations() {
+        return psIdToLocMap;
+    }
 }
