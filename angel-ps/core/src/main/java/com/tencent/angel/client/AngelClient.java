@@ -37,6 +37,7 @@ import com.tencent.angel.protobuf.generated.ClientMasterServiceProtos;
 import com.tencent.angel.protobuf.generated.ClientMasterServiceProtos.*;
 import com.tencent.angel.protobuf.generated.MLProtos.*;
 import com.tencent.angel.utils.HdfsUtil;
+import com.tencent.angel.utils.ModelUpload;
 import com.tencent.angel.utils.UGITools;
 import com.tencent.angel.worker.WorkerGroupId;
 import com.tencent.angel.worker.WorkerId;
@@ -325,6 +326,7 @@ public abstract class AngelClient implements AngelClientInterface {
         int requestId;
         try {
             requestId = master.save(null, builder.setSaveContext(ProtobufUtil.convert(saveContext)).build()).getRequestId();
+//            ModelUpload.uploadOSS(saveContext.getSavePath(),conf);
         } catch (ServiceException e) {
             LOG.error("save model failed.", e);
             throw new AngelException(e);
@@ -348,6 +350,7 @@ public abstract class AngelClient implements AngelClientInterface {
         Boolean deleteExistsFile = conf.getBoolean(AngelConf.ANGEL_JOB_OUTPUT_PATH_DELETEONEXIST,
                 AngelConf.DEFAULT_ANGEL_JOB_OUTPUT_PATH_DELETEONEXIST);
         save(saveContext, deleteExistsFile);
+        ModelUpload.uploadOSS(saveContext.getSavePath(),conf);
     }
 
     @Override

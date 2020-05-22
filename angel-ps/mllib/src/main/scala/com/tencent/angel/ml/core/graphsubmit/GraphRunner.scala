@@ -22,6 +22,7 @@ import java.io.IOException
 
 import com.tencent.angel.client.AngelClientFactory
 import com.tencent.angel.conf.AngelConf
+import com.tencent.angel.ml.ModelUpload
 import com.tencent.angel.ml.core.utils.SConfHelper
 import com.tencent.angel.ml.core.{AngelMasterContext, MLRunner}
 import com.tencent.angel.mlcore.utils.JsonUtils
@@ -66,7 +67,7 @@ class GraphRunner extends MLRunner with SConfHelper {
 
       if (!saveModelPath.isEmpty) {
         model.saveModel(envCtx, saveModelPath)
-        saveOSS(saveModelPath, conf)
+
         try {
           val fs = FileSystem.newInstance(conf)
           val gjson = fs.create(new Path(saveModelPath, "graph.json"), true)
@@ -74,6 +75,9 @@ class GraphRunner extends MLRunner with SConfHelper {
           gjson.writeBytes(jsonStr)
           gjson.flush()
           gjson.close()
+
+          saveOSS(saveModelPath, conf)
+
         } catch {
           case e: Exception => LOG.warn(e.getMessage)
         }
@@ -120,15 +124,12 @@ class GraphRunner extends MLRunner with SConfHelper {
     LOG.info("test path:" + modelPath)
     try {
       var fs = outPath.getFileSystem(conf1)
+      ModelUpload.uploadOSS(modelPath, conf1)
 
       LOG.info("copy files from ")
     } catch {
       case e: IOException =>
         e.printStackTrace()
     }
-    //        Path tmpCombinePath = HdfsUtil.toTmpPath(outPath);
-    //        HdfsUtil.copyFilesInSameHdfs(tmpOutPath, tmpCombinePath, fs);
-    //        HdfsUtil.rename(tmpCombinePath, outPath, fs);
-    //        LOG.info("rename " + tmpCombinePath + " to " + outPath);
   }
 }
