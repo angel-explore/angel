@@ -75,30 +75,30 @@ Angel MLLib提供了用Mini-Batch Gradient Descent优化方法求解的Linear Re
 
 	```java
 	./bin/angel-submit \
-		--action.type=train \
-		--angel.app.submit.class=com.tencent.angel.ml.core.graphsubmit.GraphRunner \
-		--ml.model.class.name=com.tencent.angel.ml.regression.LinearRegression \
-		--angel.train.data.path=$input_path \
-		--angel.save.model.path=$model_path \
-		--angel.log.path=$log_path \
-		--ml.data.is.classification=false \
-		--ml.model.is.classification=false \
-		--ml.epoch.num=10 \
-		--ml.feature.index.range=$featureNum+1 \
-		--ml.data.validate.ratio=0.1 \
-		--ml.learn.rate=0.1 \
-		--ml.reg.l2=0.001 \
-		--ml.num.update.per.epoch=10 \
-		--ml.worker.thread.num=4 \
-		--ml.data.type=libsvm \
-		--ml.model.type=T_FLOAT_DENSE \
-		--angel.workergroup.number=2 \
-		--angel.worker.memory.mb=5000 \
-		--angel.worker.task.number=1 \
-		--angel.ps.number=2 \
-		--angel.ps.memory.mb=5000 \
-		--angel.job.name=linearReg_network \
-		--angel.output.path.deleteonexist=true
+		-Daction.type=train \
+		-Dangel.app.submit.class=com.tencent.angel.ml.core.graphsubmit.GraphRunner \
+		-Dml.model.class.name=com.tencent.angel.ml.regression.LinearRegression \
+		-Dangel.train.data.path=/user/dwetl/cupid/data/lr/abalone_8d_train.libsvm \
+		-Dangel.save.model.path=/user/dwetl/cupid/model/lr \
+		-Dangel.log.path=/export/kris/angel3/out.log \
+		-Dml.data.is.classification=false \
+		-Dml.model.is.classification=false \
+		-Dml.epoch.num=10 \
+		-Dml.feature.index.range=8 \
+		-Dml.data.validate.ratio=0.1 \
+		-Dml.learn.rate=0.1 \
+		-Dml.reg.l2=0.001 \
+		-Dml.num.update.per.epoch=10 \
+		-Dml.worker.thread.num=4 \
+		-Dml.data.type=libsvm \
+		-Dml.model.type=T_FLOAT_DENSE \
+		-Dangel.workergroup.number=2 \
+		-Dangel.worker.memory.mb=5000 \
+		-Dangel.worker.task.number=1 \
+		-Dangel.ps.number=2 \
+		-Dangel.ps.memory.mb=5000 \
+		-Dangel.job.name=linear \
+		-Dangel.output.path.deleteonexist=true
 	```
 
 	* 向Yarn集群提交LinearRegression算法增量训练任务:

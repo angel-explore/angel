@@ -75,25 +75,25 @@ LR on Angel支持“dense”、“libsvm”、“dummy”三种数据格式。�
 你可以通过下面命令向Yarn集群提交LR算法训练任务:
 ```java
 ../../bin/angel-submit \
-    -Dml.epoch.num=20 \
-    -Dangel.app.submit.class=com.tencent.angel.ml.core.graphsubmit.GraphRunner \
-    -Dml.model.class.name=com.tencent.angel.ml.classification.LogisticRegression \
-    -Dml.feature.index.range=$featureNum \
-    -Dml.model.size=$featureNum \
-    -Dml.data.validate.ratio=0.1 \ 
-    -Dml.data.type=libsvm \
-    -Dml.learn.rate=0.1 \
-    -Dml.reg.l2=0.03 \
-    -Daction.type=train \
-    -Dml.inputlayer.optimizer=ftrl \
-    -Dangel.train.data.path=$input_path \
-    -Dangel.workergroup.number=20 \
-    -Dangel.worker.memory.mb=20000 \
-    -Dangel.worker.task.number=1 \
-    -Dangel.ps.number=20 \
-    -Dangel.ps.memory.mb=10000 \
-    -Dangel.task.data.storage.level=memory \
-    -Dangel.job.name=angel_l1
+    --ml.epoch.num=20 \
+    --angel.app.submit.class=com.tencent.angel.ml.core.graphsubmit.GraphRunner \
+    --ml.model.class.name=com.tencent.angel.ml.classification.LogisticRegression \
+    --ml.feature.index.range=$featureNum \
+    --ml.model.size=$featureNum \
+    --ml.data.validate.ratio=0.1 \
+    --ml.data.type=libsvm \
+    --ml.learn.rate=0.1 \
+    --ml.reg.l2=0.03 \
+    --action.type=train \
+    --ml.inputlayer.optimizer=ftrl \
+    --angel.train.data.path=$input_path \
+    --angel.workergroup.number=20 \
+    --angel.worker.memory.mb=20000 \
+    --angel.worker.task.number=1 \
+    --angel.ps.number=20 \
+    --angel.ps.memory.mb=10000 \
+    --angel.task.data.storage.level=memory \
+    --angel.job.name=angel_l1
 ```
 
 
