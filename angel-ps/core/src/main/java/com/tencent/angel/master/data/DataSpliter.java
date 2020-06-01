@@ -131,6 +131,7 @@ public class DataSpliter {
 
   private List<org.apache.hadoop.mapreduce.InputSplit> generateSplitsUseNewAPI(Configuration conf,
     int expectedSplitNum) throws IOException, ClassNotFoundException, InterruptedException {
+
     String jobIDStr = conf.get(AngelConf.ANGEL_JOB_ID);
     JobID jobID = JobID.forName(jobIDStr);
     JobContext jobConf = new JobContextImpl(new JobConf(conf), jobID);

@@ -104,9 +104,9 @@ class LDARunner extends MLRunner {
 
     val client = AngelClientFactory.get(conf)
 
-    client.startPSServer()
-    client.loadModel(new LDAModel(conf))
-    client.runTask(classOf[LDATrainTask])
+    client.startPSServer()// 启动参数服务器
+    client.loadModel(new LDAModel(conf)) //加载模型
+    client.runTask(classOf[LDATrainTask]) //设置lda训练任务
     client.waitForCompletion()
     client.stop()
   }

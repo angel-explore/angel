@@ -19,16 +19,16 @@
 package com.tencent.angel.ml.core.graphsubmit
 
 import com.tencent.angel.conf.AngelConf
-import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
 import com.tencent.angel.ml.core.conf.AngelMLConf
+import com.tencent.angel.ml.core.{AngelMasterContext, MLLearner}
+import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
+import com.tencent.angel.ml.metric.LossMetric
+import com.tencent.angel.mlcore.MLModel
+import com.tencent.angel.mlcore.conf.{MLCoreConf, SharedConf}
 import com.tencent.angel.mlcore.network.Graph
 import com.tencent.angel.mlcore.network.layers.unary.KmeansInputLayer
 import com.tencent.angel.mlcore.optimizer.decayer.StepSizeScheduler
 import com.tencent.angel.mlcore.utils.ValidationUtils
-import com.tencent.angel.mlcore.MLModel
-import com.tencent.angel.ml.core.{AngelMasterContext, MLLearner}
-import com.tencent.angel.ml.math2.utils.{DataBlock, LabeledData}
-import com.tencent.angel.ml.metric.LossMetric
 import com.tencent.angel.worker.task.TaskContext
 import org.apache.commons.logging.{Log, LogFactory}
 
@@ -49,9 +49,9 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
 
   // Init Graph Model
   val modelClassName: String = sharedConf.modelClassName
-  val model: AngelModel = AngelModel(modelClassName, conf, ctx)
-  model.buildNetwork()
-  model.createMatrices(AngelMasterContext(null))
+  val model: AngelModel = AngelModel(modelClassName, conf, ctx)// 实例化实际的模型
+  model.buildNetwork() //构建网络
+  model.createMatrices(AngelMasterContext(null)) //创建矩阵
   val graph: Graph = model.graph
   val ssScheduler: StepSizeScheduler = StepSizeScheduler(conf.stepSizeScheduler, lr0)
   val decayOnBatch: Boolean = conf.getBoolean(MLCoreConf.ML_OPT_DECAY_ON_BATCH,
@@ -69,10 +69,10 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
     var batchCount: Int = 0
     var loss: Double = 0.0
     while (iter.hasNext) {
-      // LOG.info("start to feedData ...")
+      LOG.info("start to feedData ...")
       graph.feedData(iter.next())
 
-      // LOG.info("start to pullParams ...")
+      LOG.info("start to pullParams ...")
       if (model.isSparseFormat) {
         model.pullParams(epoch, graph.placeHolder.getIndices)
       } else {
@@ -80,30 +80,30 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
       }
 
 
-      // LOG.info("calculate to forward ...")
+      LOG.info("calculate to forward ...")
       loss = graph.calForward() // forward
-      // LOG.info(s"The training los of epoch $epoch batch $batchCount is $loss" )
+      LOG.info(s"The training los of epoch $epoch batch $batchCount is $loss")
 
-      // LOG.info("calculate to backward ...")
+      LOG.info("calculate to backward ...")
       graph.calBackward() // backward
 
-      // LOG.info("calculate and push gradient ...")
+      LOG.info("calculate and push gradient ...")
       model.pushGradient(graph.getLR) // pushgrad
-      // waiting all gradient pushed
+      //       waiting all gradient pushed
 
-      // LOG.info("waiting for push barrier ...")
+      LOG.info("waiting for push barrier ...")
       barrier()
 
       if (decayOnBatch) {
         graph.setLR(ssScheduler.next())
       }
       if (ctx.getTaskId.getIndex == 0) {
-        // LOG.info("start to update ...")
+        LOG.info("start to update ...")
         model.update(epoch * numBatch + batchCount, 1) // update parameters on PS
       }
 
       // waiting all gradient update finished
-      // LOG.info("waiting for update barrier ...")
+      LOG.info("waiting for update barrier ...")
       barrier()
       batchCount += 1
 
@@ -123,6 +123,13 @@ class GraphLearner(conf: SharedConf, ctx: TaskContext) extends MLLearner(ctx) {
     train(trainData, null, validationData)
   }
 
+  /**
+    *
+    * @param posTrainData
+    * @param negTrainData
+    * @param validationData
+    * @return
+    */
   override def train(posTrainData: DataBlock[LabeledData],
                      negTrainData: DataBlock[LabeledData],
                      validationData: DataBlock[LabeledData]): MLModel = {
