@@ -62,6 +62,8 @@ public interface TConnection extends Closeable {
   public PSProtocol getPSService(String hostname, int port) throws IOException;
 
   /**
+   * 3.
+   * PS RPC Client
    * Get ps rpc client with async mode.
    *
    * @param hostname ps host name
@@ -72,6 +74,8 @@ public interface TConnection extends Closeable {
   public PSProtocol.AsyncProtocol getAsyncPSService(String hostname, int port) throws IOException;
 
   /**
+   * 2.
+   * Worker RPC Client
    * Get worker rpc client with sync mode.
    *
    * @param hostname worker host name
@@ -82,6 +86,8 @@ public interface TConnection extends Closeable {
   public WorkerProtocol getWorkerService(String hostname, int port) throws IOException;
 
   /**
+   * 1.
+   * Master RPC Client
    * Get master rpc client with sync mode.
    *
    * @param hostname master host name

@@ -140,12 +140,12 @@ public class AngelApplicationMaster extends CompositeService {
     private final ContainerId containerId;
 
     /**
-     * The host of the node manager where the angel applitaion master is located
+     * The host of the node manager where the angel application master is located
      */
     private final String nmHost;
 
     /**
-     * The port of the node manager where the angel applitaion master is located
+     * The port of the node manager where the angel application master is located
      */
     private final int nmPort;
 
@@ -258,6 +258,7 @@ public class AngelApplicationMaster extends CompositeService {
     private ClientManager clientManager;
 
     /**
+     * 心跳监控
      * Heartbeat monitor
      */
     private HeartbeatMonitor hbMonitor;
@@ -297,6 +298,7 @@ public class AngelApplicationMaster extends CompositeService {
 
 
     /**
+     * master应用运行上下文, 继承了AMContext 上下文接口
      * running application master context
      */
     public class RunningAppContext implements AMContext {
@@ -730,7 +732,8 @@ public class AngelApplicationMaster extends CompositeService {
     }
 
     /**
-     * init and start all service modules for angel applicaiton master.
+     * 启动Angel相关的所有模块
+     * init and start all service modules for angel application master.
      */
     public void initAndStart() throws Exception {
         addIfService(angelApp);
@@ -820,8 +823,7 @@ public class AngelApplicationMaster extends CompositeService {
         switch (mode) {
             case ANGEL_PS_WORKER: {
                 // a dummy data spliter is just for test now
-                boolean useDummyDataSpliter = conf.getBoolean(AngelConf.ANGEL_AM_USE_DUMMY_DATASPLITER,
-                        AngelConf.DEFAULT_ANGEL_AM_USE_DUMMY_DATASPLITER);
+                boolean useDummyDataSpliter = conf.getBoolean(AngelConf.ANGEL_AM_USE_DUMMY_DATASPLITER, AngelConf.DEFAULT_ANGEL_AM_USE_DUMMY_DATASPLITER);
                 if (useDummyDataSpliter) {
                     dataSpliter = new DummyDataSpliter(appContext);
                 } else {

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -49,249 +49,252 @@ import org.apache.hadoop.yarn.webapp.WebApp;
 /**
  * Master context interface.
  */
-@InterfaceAudience.Private public interface AMContext {
+@InterfaceAudience.Private
+public interface AMContext {
 
-  /**
-   * Get application id
-   *
-   * @return ApplicationId application id
-   */
-  ApplicationId getApplicationId();
+    /**
+     * Get application id
+     *
+     * @return ApplicationId application id
+     */
+    ApplicationId getApplicationId();
 
-  /**
-   * Get application attempt id
-   *
-   * @return ApplicationAttemptId application attempt id
-   */
-  ApplicationAttemptId getApplicationAttemptId();
+    /**
+     * Get application attempt id
+     *
+     * @return ApplicationAttemptId application attempt id
+     */
+    ApplicationAttemptId getApplicationAttemptId();
 
-  /**
-   * Get application name
-   *
-   * @return String application name
-   */
-  String getApplicationName();
+    /**
+     * Get application name
+     *
+     * @return String application name
+     */
+    String getApplicationName();
 
-  /**
-   * Get application start timestamp
-   *
-   * @return long application start timestamp
-   */
-  long getStartTime();
+    /**
+     * Get application start timestamp
+     *
+     * @return long application start timestamp
+     */
+    long getStartTime();
 
-  /**
-   * Get global event handler in master
-   *
-   * @return EventHandler global event handler in master
-   */
-  @SuppressWarnings("rawtypes") EventHandler getEventHandler();
+    /**
+     * Get global event handler in master
+     *
+     * @return EventHandler global event handler in master
+     */
+    @SuppressWarnings("rawtypes")
+    EventHandler getEventHandler();
 
-  /**
-   * Get system clock
-   *
-   * @return Clock system clock
-   */
-  Clock getClock();
+    /**
+     * Get system clock
+     *
+     * @return Clock system clock
+     */
+    Clock getClock();
 
-  /**
-   * Get Client to Master token secret manager
-   *
-   * @return ClientToAMTokenSecretManager Client to Master token secret manager
-   */
-  ClientToAMTokenSecretManager getClientToAMTokenSecretManager();
+    /**
+     * Get Client to Master token secret manager
+     *
+     * @return ClientToAMTokenSecretManager Client to Master token secret manager
+     */
+    ClientToAMTokenSecretManager getClientToAMTokenSecretManager();
 
-  /**
-   * Get the name of user that submit the application
-   *
-   * @return String the name of user that submit the application
-   */
-  String getUser();
+    /**
+     * Get the name of user that submit the application
+     *
+     * @return String the name of user that submit the application
+     */
+    String getUser();
 
-  /**
-   * Get yarn credentials
-   *
-   * @return Credentials yarn credentials
-   */
-  Credentials getCredentials();
+    /**
+     * Get yarn credentials
+     *
+     * @return Credentials yarn credentials
+     */
+    Credentials getCredentials();
 
-  /**
-   * Get parameter server manager
-   *
-   * @return ParameterServerManager parameter server manager
-   */
-  ParameterServerManager getParameterServerManager();
+    /**
+     * Get parameter server manager
+     *
+     * @return ParameterServerManager parameter server manager
+     */
+    ParameterServerManager getParameterServerManager();
 
-  /**
-   * Get container allocator
-   *
-   * @return ContainerAllocator container allocator
-   */
-  ContainerAllocator getContainerAllocator();
+    /**
+     * Get container allocator
+     *
+     * @return ContainerAllocator container allocator
+     */
+    ContainerAllocator getContainerAllocator();
 
-  /**
-   * Get rpc server
-   *
-   * @return MasterService rpc server
-   */
-  MasterService getMasterService();
+    /**
+     * Get rpc server
+     *
+     * @return MasterService rpc server
+     */
+    MasterService getMasterService();
 
-  /**
-   * Get event dispatcher
-   *
-   * @return event dispatcher
-   */
-  Dispatcher getDispatcher();
+    /**
+     * Get event dispatcher
+     *
+     * @return event dispatcher
+     */
+    Dispatcher getDispatcher();
 
-  /**
-   * Get application state manager
-   *
-   * @return App application state manager
-   */
-  App getApp();
+    /**
+     * Get application state manager
+     *
+     * @return App application state manager
+     */
+    App getApp();
 
-  /**
-   * Get application configuration
-   *
-   * @return Configuration application configuration
-   */
-  Configuration getConf();
+    /**
+     * Get application configuration
+     *
+     * @return Configuration application configuration
+     */
+    Configuration getConf();
 
-  /**
-   * Get kubernetes clustermanager to scheduler worker
-   * @return kubernetes clustermanager
-   */
-  KubernetesClusterManager getK8sClusterManager();
+    /**
+     * Get kubernetes clustermanager to scheduler worker
+     *
+     * @return kubernetes clustermanager
+     */
+    KubernetesClusterManager getK8sClusterManager();
 
-  /**
-   * Get web server
-   *
-   * @return WebApp web server
-   */
-  WebApp getWebApp();
+    /**
+     * Get web server
+     *
+     * @return WebApp web server
+     */
+    WebApp getWebApp();
 
-  /**
-   * Get matrix meta manager
-   *
-   * @return MatrixMetaManager matrix meta manager
-   */
-  AMMatrixMetaManager getMatrixMetaManager();
+    /**
+     * Get matrix meta manager
+     *
+     * @return MatrixMetaManager matrix meta manager
+     */
+    AMMatrixMetaManager getMatrixMetaManager();
 
-  /**
-   * Get ps location manager
-   *
-   * @return LocationManager ps location manager
-   */
-  LocationManager getLocationManager();
+    /**
+     * Get ps location manager
+     *
+     * @return LocationManager ps location manager
+     */
+    LocationManager getLocationManager();
 
-  /**
-   * Get running mode, ANGEL_PS_WORKER or ANGEL_PS
-   *
-   * @return RunningMode running mode
-   */
-  RunningMode getRunningMode();
+    /**
+     * Get running mode, ANGEL_PS_WORKER or ANGEL_PS
+     *
+     * @return RunningMode running mode
+     */
+    RunningMode getRunningMode();
 
-  /**
-   * Get PSAgent manager
-   *
-   * @return PSAgentManager PSAgent manager
-   */
-  PSAgentManager getPSAgentManager();
+    /**
+     * Get PSAgent manager
+     *
+     * @return PSAgentManager PSAgent manager
+     */
+    PSAgentManager getPSAgentManager();
 
-  /**
-   * Get Worker manager
-   *
-   * @return WorkerManager Worker manager
-   */
-  WorkerManager getWorkerManager();
+    /**
+     * Get Worker manager
+     *
+     * @return WorkerManager Worker manager
+     */
+    WorkerManager getWorkerManager();
 
-  /**
-   * Get train data splitter
-   *
-   * @return DataSpliter train data splitter
-   */
-  DataSpliter getDataSpliter();
+    /**
+     * Get train data splitter
+     *
+     * @return DataSpliter train data splitter
+     */
+    DataSpliter getDataSpliter();
 
-  /**
-   * Get total train iteration number
-   *
-   * @return int total train iteration number
-   */
-  int getTotalIterationNum();
+    /**
+     * Get total train iteration number
+     *
+     * @return int total train iteration number
+     */
+    int getTotalIterationNum();
 
-  /**
-   * Get task manager
-   *
-   * @return AMTaskManager task manager
-   */
-  AMTaskManager getTaskManager();
+    /**
+     * Get task manager
+     *
+     * @return AMTaskManager task manager
+     */
+    AMTaskManager getTaskManager();
 
-  /**
-   * Get master attempt index
-   *
-   * @return int master attempt index
-   */
-  int getAMAttemptTime();
+    /**
+     * Get master attempt index
+     *
+     * @return int master attempt index
+     */
+    int getAMAttemptTime();
 
-  /**
-   * Get application state storage
-   *
-   * @return application state storage
-   */
-  AppStateStorage getAppStateStorage();
+    /**
+     * Get application state storage
+     *
+     * @return application state storage
+     */
+    AppStateStorage getAppStateStorage();
 
-  /**
-   * Is we should clean the resource of the application
-   *
-   * @return boolean true means need clean
-   */
-  boolean needClear();
+    /**
+     * Is we should clean the resource of the application
+     *
+     * @return boolean true means need clean
+     */
+    boolean needClear();
 
-  /**
-   * Get application deploy mode:LOCAL or YARN
-   *
-   * @return AngelDeployMode application deploy mode
-   */
-  AngelDeployMode getDeployMode();
+    /**
+     * Get application deploy mode:LOCAL or YARN
+     *
+     * @return AngelDeployMode application deploy mode
+     */
+    AngelDeployMode getDeployMode();
 
-  /**
-   * Get algorithm log collector
-   *
-   * @return AlgoLogService
-   */
-  MetricsService getAlgoMetricsService();
+    /**
+     * Get algorithm log collector
+     *
+     * @return AlgoLogService
+     */
+    MetricsService getAlgoMetricsService();
 
-  /**
-   * Get Matrix partition Replication number
-   *
-   * @return Matrix partition Replication number
-   */
-  int getPSReplicationNum();
+    /**
+     * Get Matrix partition Replication number
+     *
+     * @return Matrix partition Replication number
+     */
+    int getPSReplicationNum();
 
-  /**
-   * Get Client Manager
-   *
-   * @return Angel client manager
-   */
-  ClientManager getClientManager();
+    /**
+     * Get Client Manager
+     *
+     * @return Angel client manager
+     */
+    ClientManager getClientManager();
 
-  /**
-   * Get Yarn web port
-   *
-   * @return Yarn web port
-   */
-  int getYarnNMWebPort();
+    /**
+     * Get Yarn web port
+     *
+     * @return Yarn web port
+     */
+    int getYarnNMWebPort();
 
-  /**
-   * Get model saver
-   *
-   * @return model saver
-   */
-  AMModelSaver getModelSaver();
+    /**
+     * Get model saver
+     *
+     * @return model saver
+     */
+    AMModelSaver getModelSaver();
 
-  /**
-   * Get model loader
-   *
-   * @return model loader
-   */
-  AMModelLoader getModelLoader();
+    /**
+     * Get model loader
+     *
+     * @return model loader
+     */
+    AMModelLoader getModelLoader();
 }

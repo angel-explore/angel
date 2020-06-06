@@ -28,22 +28,31 @@ trait MLRunner extends AppSubmitter {
 
   /**
     * 训练任务获取模型
+    *
     * @param conf Angel任务相关配置和算法配置信息
     */
   def train(conf: Configuration)
 
   /**
     * 传入样本使用模型进行预测
-    * @param conf  Angel任务相关配置
+    *
+    * @param conf Angel任务相关配置
     */
   def predict(conf: Configuration)
 
+
+  /**
+    * 真正执行
+    *
+    * @param conf the conf
+    * @throws
+    */
   @throws[Exception]
   override
   def submit(conf: Configuration): Unit = {
     val actType = conf.get(AngelConf.ANGEL_ACTION_TYPE)
     actType match {
-      case MLCoreConf.ANGEL_ML_TRAIN | MLCoreConf.ANGEL_ML_INC_TRAIN  =>
+      case MLCoreConf.ANGEL_ML_TRAIN | MLCoreConf.ANGEL_ML_INC_TRAIN =>
         train(conf)
       case MLCoreConf.ANGEL_ML_PREDICT =>
         predict(conf)

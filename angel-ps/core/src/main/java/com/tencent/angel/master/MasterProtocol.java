@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -25,7 +25,7 @@ import com.tencent.angel.protobuf.generated.PSMasterServiceProtos.PSMasterServic
 import com.tencent.angel.protobuf.generated.WorkerMasterServiceProtos.WorkerMasterService;
 
 public interface MasterProtocol extends VersionedProtocol, PSMasterService.BlockingInterface,
-  PSAgentMasterService.BlockingInterface, WorkerMasterService.BlockingInterface,
-  ClientMasterService.BlockingInterface {
-  static long VERSION = 0L;
+        PSAgentMasterService.BlockingInterface, WorkerMasterService.BlockingInterface,
+        ClientMasterService.BlockingInterface {
+    static long VERSION = 0L;
 }

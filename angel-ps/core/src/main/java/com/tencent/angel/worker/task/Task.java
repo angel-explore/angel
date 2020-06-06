@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017-2018 THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  *
  * https://opensource.org/licenses/Apache-2.0
@@ -36,140 +36,145 @@ import java.util.List;
  * And will reflect to invoke user special task which inherited by {@link BaseTask}({@link AngelConf#ANGEL_TASK_USER_TASKCLASS})
  */
 public class Task extends Thread {
-  private static final Log LOG = LogFactory.getLog(Task.class);
-  private Class<?> userTaskClass;
-  private final TaskId taskId;
-  private volatile TaskState state;
-  final List<String> diagnostics;
+    private static final Log LOG = LogFactory.getLog(Task.class);
+    private Class<?> userTaskClass;
+    private final TaskId taskId;
+    private volatile TaskState state;
+    final List<String> diagnostics;
 
-  //依赖
-  @SuppressWarnings("rawtypes") private volatile BaseTask userTask;
-  //任务上下文
-  final TaskContext taskContext;
+    //依赖
+    @SuppressWarnings("rawtypes")
+    private volatile BaseTask userTask;
+    //任务上下文
+    final TaskContext taskContext;
 
-  public Task(TaskId taskId, TaskContext taskContext) {
-    this.taskId = taskId;
-    this.taskContext = taskContext;
-    this.diagnostics = new ArrayList<String>();
-    setState(TaskState.NEW);
-  }
-
-  @SuppressWarnings({"unchecked", "rawtypes"}) @Override public void run() {
-    Configuration conf = WorkerContext.get().getConf();
-
-    LOG.info("task " + taskId + " is running.");
-    try {
-      userTaskClass = conf.getClassByName(
-        conf.get(AngelConf.ANGEL_TASK_USER_TASKCLASS, AngelConf.DEFAULT_ANGEL_TASK_USER_TASKCLASS));
-      LOG.info("userTaskClass = " + userTaskClass + " task index = " + taskContext.getTaskIndex()
-        + ", name = " + this.getName());
-
-      BaseTask userTask = newBaseTask(userTaskClass);
-      this.userTask = userTask;
-      runUser(userTask);
-    } catch (Throwable e) {
-      LOG.error("task runner error ", e);
-      diagnostics.add("task runner error: " + ExceptionUtils.getFullStackTrace(e));
-      setState(TaskState.FAILED);
+    public Task(TaskId taskId, TaskContext taskContext) {
+        this.taskId = taskId;
+        this.taskContext = taskContext;
+        this.diagnostics = new ArrayList<String>();
+        setState(TaskState.NEW);
     }
 
-    taskExit();
-  }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public void run() {
+        Configuration conf = WorkerContext.get().getConf();
 
-  @SuppressWarnings("rawtypes") private BaseTask newBaseTask(Class<?> userTask)
-    throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-    IllegalArgumentException, InvocationTargetException {
-    Constructor<?> meth = userTask.getDeclaredConstructor(TaskContext.class);
-    meth.setAccessible(true);
-    return (BaseTask) meth.newInstance(taskContext);
-  }
+        LOG.info("task " + taskId + " is running.");
+        try {
+            userTaskClass = conf.getClassByName(conf.get(AngelConf.ANGEL_TASK_USER_TASKCLASS, AngelConf.DEFAULT_ANGEL_TASK_USER_TASKCLASS));
+            LOG.info("userTaskClass = " + userTaskClass + " task index = " + taskContext.getTaskIndex()
+                    + ", name = " + this.getName());
 
-  private <KEY, VALUE, VALUEOUT> void runUser(BaseTask<KEY, VALUE, VALUEOUT> userTask)
-    throws Exception {
-    setState(TaskState.PREPROCESSING);
-    userTask.preProcess(taskContext);
-    setState(TaskState.RUNNING);
+            BaseTask userTask = newBaseTask(userTaskClass);
+            this.userTask = userTask;
+            runUser(userTask);
+        } catch (Throwable e) {
+            LOG.error("task runner error ", e);
+            diagnostics.add("task runner error: " + ExceptionUtils.getFullStackTrace(e));
+            setState(TaskState.FAILED);
+        }
 
-    userTask.run(taskContext);
-    setState(TaskState.COMMITING);
-    commit();
-    setState(TaskState.SUCCESS);
-  }
-
-  @SuppressWarnings("unused") private <KEY, VALUE> void combineUpdateIndex() {
-    TaskManager manager = WorkerContext.get().getTaskManager();
-    if (manager.isAllTaskRunning()) {
-      manager.combineUpdateIndex();
+        taskExit();
     }
-  }
 
-  private void taskExit() {
-    TaskManager manager = WorkerContext.get().getTaskManager();
-    if (manager != null) {
-      if (manager.isTaskFailed()) {
-        WorkerContext.get().getWorker().workerError(manager.getDiagnostics());
-      } else if (manager.isAllTaskSuccess()) {
-        WorkerContext.get().getWorker().workerDone();
-      }
+    @SuppressWarnings("rawtypes")
+    private BaseTask newBaseTask(Class<?> userTask)
+            throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        Constructor<?> meth = userTask.getDeclaredConstructor(TaskContext.class);
+        meth.setAccessible(true);
+        return (BaseTask) meth.newInstance(taskContext);
     }
-  }
 
-  private void commit() {
-  }
+    private <KEY, VALUE, VALUEOUT> void runUser(BaseTask<KEY, VALUE, VALUEOUT> userTask)
+            throws Exception {
+        setState(TaskState.PREPROCESSING);
+        userTask.preProcess(taskContext);
+        setState(TaskState.RUNNING);
 
-  /**
-   * Gets task context.
-   *
-   * @return the task context
-   */
-  public TaskContext getTaskContext() {
-    return taskContext;
-  }
+        userTask.run(taskContext);
+        setState(TaskState.COMMITING);
+        commit();
+        setState(TaskState.SUCCESS);
+    }
 
-  /**
-   * Gets current task state.
-   *
-   * @return the task state
-   */
-  public TaskState getTaskState() {
-    return state;
-  }
+    @SuppressWarnings("unused")
+    private <KEY, VALUE> void combineUpdateIndex() {
+        TaskManager manager = WorkerContext.get().getTaskManager();
+        if (manager.isAllTaskRunning()) {
+            manager.combineUpdateIndex();
+        }
+    }
 
-  /**
-   * Sets state.
-   *
-   * @param state the state
-   */
-  public void setState(TaskState state) {
-    this.state = state;
-  }
+    private void taskExit() {
+        TaskManager manager = WorkerContext.get().getTaskManager();
+        if (manager != null) {
+            if (manager.isTaskFailed()) {
+                WorkerContext.get().getWorker().workerError(manager.getDiagnostics());
+            } else if (manager.isAllTaskSuccess()) {
+                WorkerContext.get().getWorker().workerDone();
+            }
+        }
+    }
 
-  /**
-   * Gets progress.
-   *
-   * @return the progress
-   */
-  public float getProgress() {
-    return taskContext.getProgress();
-  }
+    private void commit() {
+    }
 
-  /**
-   * Gets diagnostics.
-   *
-   * @return the diagnostics
-   */
-  public String getDiagnostics() {
-    return "taskid=" + taskId + ", state=" + state + ", diagnostics=" + Arrays
-      .toString(diagnostics.toArray(new String[0]));
-  }
+    /**
+     * Gets task context.
+     *
+     * @return the task context
+     */
+    public TaskContext getTaskContext() {
+        return taskContext;
+    }
 
-  /**
-   * Gets user task.
-   *
-   * @return the user task
-   */
-  @SuppressWarnings("rawtypes") public BaseTask getUserTask() {
-    return userTask;
-  }
+    /**
+     * Gets current task state.
+     *
+     * @return the task state
+     */
+    public TaskState getTaskState() {
+        return state;
+    }
+
+    /**
+     * Sets state.
+     *
+     * @param state the state
+     */
+    public void setState(TaskState state) {
+        this.state = state;
+    }
+
+    /**
+     * Gets progress.
+     *
+     * @return the progress
+     */
+    public float getProgress() {
+        return taskContext.getProgress();
+    }
+
+    /**
+     * Gets diagnostics.
+     *
+     * @return the diagnostics
+     */
+    public String getDiagnostics() {
+        return "taskid=" + taskId + ", state=" + state + ", diagnostics=" + Arrays
+                .toString(diagnostics.toArray(new String[0]));
+    }
+
+    /**
+     * Gets user task.
+     *
+     * @return the user task
+     */
+    @SuppressWarnings("rawtypes")
+    public BaseTask getUserTask() {
+        return userTask;
+    }
 
 }

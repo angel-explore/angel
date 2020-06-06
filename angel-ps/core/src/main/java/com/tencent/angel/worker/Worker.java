@@ -268,8 +268,7 @@ public class Worker implements Executor {
 
     LOG.info("Init and start task manager and all task");
     taskManager.init();
-    taskManager.startAllTasks(
-      workerGroup.getWorkerRef(workerAttemptId.getWorkerId()).getTaskIdToContextMap());
+    taskManager.startAllTasks( workerGroup.getWorkerRef(workerAttemptId.getWorkerId()).getTaskIdToContextMap());
     workerInitFinishedFlag.set(true);
   }
 

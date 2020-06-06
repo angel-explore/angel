@@ -23,6 +23,7 @@ import com.tencent.angel.protobuf.generated.MasterPSServiceProtos.MasterPSServic
 import com.tencent.angel.protobuf.generated.PSAgentPSServiceProtos;
 
 /**
+ * 参数服务器协议，
  * The interface parameter server protocol.
  */
 public interface PSProtocol extends VersionedProtocol, MasterPSService.BlockingInterface,
