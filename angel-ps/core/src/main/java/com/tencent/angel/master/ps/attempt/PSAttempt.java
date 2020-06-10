@@ -103,8 +103,7 @@ public class PSAttempt implements EventHandler<PSAttemptEvent> {
    */
   private Container container;
 
-  private static final DiagnosticUpdaterTransition DIAGNOSTIC_UPDATE_TRANSITION =
-    new DiagnosticUpdaterTransition();
+  private static final DiagnosticUpdaterTransition DIAGNOSTIC_UPDATE_TRANSITION = new DiagnosticUpdaterTransition();
 
   private static final StateMachineFactory<PSAttempt, PSAttemptStateInternal, PSAttemptEventType, PSAttemptEvent>
     stateMachineFactory =
@@ -126,7 +125,7 @@ public class PSAttempt implements EventHandler<PSAttemptEvent> {
 
       // Transitions from the UNASSIGNED state.
       .addTransition(PSAttemptStateInternal.SCHEDULED, PSAttemptStateInternal.ASSIGNED,
-        PSAttemptEventType.PA_CONTAINER_ASSIGNED, new ContainerAssignedTransition())
+        PSAttemptEventType.PA_CONTAINER_ASSIGNED, new ContainerAssignedTransition())//
       .addTransition(PSAttemptStateInternal.SCHEDULED, PSAttemptStateInternal.KILLED,
         PSAttemptEventType.PA_KILL, new PSAttemptFinishedTransition(PSAttemptStateInternal.KILLED))
       // when user kill task, or task timeout, psAttempt will receive TA_FAILMSG event
@@ -337,8 +336,7 @@ public class PSAttempt implements EventHandler<PSAttemptEvent> {
                   psAttempt.getContext().getConf(), psAttemptId, psAttempt.getContext().getApplicationId(),
                   psAttempt.getContext().getMasterService(), psAttempt.getContext().getCredentials());
 
-          launchEvent =
-                  new ContainerRemoteLaunchEvent(psAttemptId, launchContext, assignedEvent.getContainer());
+          launchEvent =  new ContainerRemoteLaunchEvent(psAttemptId, launchContext, assignedEvent.getContainer());
         }
 
         psAttempt.getContext().getEventHandler().handle(launchEvent);

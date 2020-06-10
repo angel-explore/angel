@@ -365,8 +365,7 @@ public class AMParameterServer implements EventHandler<AMParameterServerEvent> {
 
       }
       if (oldState != getState()) {
-        LOG.info(event.getPsId() + " AMParameterServer Transitioned from " + oldState + " to "
-          + getState());
+        LOG.info(event.getPsId() + " AMParameterServer Transitioned from " + oldState + " to " + getState());
       }
     } finally {
       writeLock.unlock();

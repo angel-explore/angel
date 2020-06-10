@@ -128,8 +128,7 @@ public class ParameterServerManager extends AbstractService
     private final long psTimeOutMS;
 
 
-    public ParameterServerManager(AMContext context,
-                                  Map<ParameterServerId, Integer> psIdToAttemptIndexMap) {
+    public ParameterServerManager(AMContext context, Map<ParameterServerId, Integer> psIdToAttemptIndexMap) {
         super("PS Manager");
         this.context = context;
         this.psIdToAttemptIndexMap = psIdToAttemptIndexMap;
@@ -204,8 +203,7 @@ public class ParameterServerManager extends AbstractService
      */
     public void startAllPS() {
         for (Map.Entry<ParameterServerId, AMParameterServer> entry : psMap.entrySet()) {
-            entry.getValue()
-                    .handle(new AMParameterServerEvent(AMParameterServerEventType.PS_SCHEDULE, entry.getKey()));
+            entry.getValue().handle(new AMParameterServerEvent(AMParameterServerEventType.PS_SCHEDULE, entry.getKey()));
         }
     }
 

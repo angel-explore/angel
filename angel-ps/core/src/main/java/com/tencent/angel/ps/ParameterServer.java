@@ -358,8 +358,7 @@ public class ParameterServer {
             conf.set(AngelConf.ANGEL_TASK_ACTUAL_NUM, System.getenv(AngelEnvironment.TASK_NUMBER.name()));
         }
 
-        final ParameterServer psServer =
-                new ParameterServer(serverIndex, attemptIndex, appMasterHost, appMasterPort, conf);
+        final ParameterServer psServer = new ParameterServer(serverIndex, attemptIndex, appMasterHost, appMasterPort, conf);
 
         try {
             Credentials credentials = UserGroupInformation.getCurrentUser().getCredentials();

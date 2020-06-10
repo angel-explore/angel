@@ -170,8 +170,7 @@ public class WorkerAttempt implements EventHandler<WorkerAttemptEvent> {
 
   protected static final StateMachineFactory<WorkerAttempt, WorkerAttemptState, WorkerAttemptEventType, WorkerAttemptEvent>
     stateMachineFactory =
-    new StateMachineFactory<WorkerAttempt, WorkerAttemptState, WorkerAttemptEventType, WorkerAttemptEvent>(
-      WorkerAttemptState.NEW)
+    new StateMachineFactory<WorkerAttempt, WorkerAttemptState, WorkerAttemptEventType, WorkerAttemptEvent>( WorkerAttemptState.NEW)
 
       // from NEW state
       .addTransition(WorkerAttemptState.NEW, WorkerAttemptState.SCHEDULED,
